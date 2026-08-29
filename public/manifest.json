@@ -1,0 +1,30 @@
+{
+  "name": "ENCUADRE",
+  "short_name": "ENCUADRE",
+  "description": "Alinea la visión antes de tomar la foto",
+  "theme_color": "#7C3DFF",
+  "background_color": "#080714",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/brand/symbol.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/symbol.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "photography",
+    "productivity"
+  ]
+}

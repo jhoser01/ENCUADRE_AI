@@ -1,26 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ─── Tailwind v4 Theme Extension ───────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-ink-950: #080714;
+  --color-ink-900: #100A2E;
+  --color-brand-purple-500: #7C3DFF;
+  --color-brand-purple-700: #5B21E8;
+  --color-brand-green-600: #16C95A;
+  --color-brand-green-400: #45E679;
+  --color-surface-50: #F7F7FB;
+  --color-surface-100: #EEEEF5;
+  --color-muted-dark: #A9A7B7;
+  --color-muted-light: #626171;
+  --color-semantic-success: #16C95A;
+  --color-semantic-warning: #F5A524;
+  --color-semantic-danger: #E5484D;
+  --color-semantic-info: #7C3DFF;
+
+  /* Fonts */
+  --font-poppins: 'Poppins', sans-serif;
+  --font-geist: 'Geist', sans-serif;
+  --font-sans: 'Geist', sans-serif;
+
+  /* Shimmer animation */
+  --animate-shimmer: shimmer 1.5s infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Shimmer keyframes for skeleton */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ─── ENCUADRE CSS Custom Properties ────────────────────────────────────── */
+:root {
+  --brand-gradient: linear-gradient(135deg, #7C3DFF 0%, #45E679 100%);
+  --brand-gradient-subtle: linear-gradient(135deg, rgba(124,61,255,0.15) 0%, rgba(69,230,121,0.08) 100%);
+}
+
+/* ─── Utility Classes ────────────────────────────────────────────────────── */
+.brand-gradient {
+  background: var(--brand-gradient);
+}
+
+.gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ─── Custom Scrollbars ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #080714; }
+::-webkit-scrollbar-thumb { background: #1e1640; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #7C3DFF; }
+
+/* ─── Focus Visible ──────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #7C3DFF;
+  outline-offset: 2px;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
+/* ─── Base Styles ────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #080714;
+  color: #F7F7FB;
+  font-family: 'Geist', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+::selection {
+  background: rgba(124, 61, 255, 0.3);
+  color: #F7F7FB;
 }

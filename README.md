@@ -1,36 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ENCUADRE
 
-## Getting Started
+**Alinea la visión. Antes de tomar la foto.**
 
-First, run the development server:
+ENCUADRE es una plataforma web que alinea las expectativas visuales entre fotógrafo y cliente antes de una sesión fotográfica, eliminando el problema de que las expectativas se comunican con palabras subjetivas cuando deberían validarse visualmente.
+
+---
+
+## ¿Qué hace ENCUADRE?
+
+1. **El fotógrafo crea su Style DNA** — sube fotos representativas de su portafolio; el sistema analiza sus características visuales (cálido/frío, espontáneo/posado, documental/editorial, etc.)
+2. **El cliente recibe un enlace** — sin instalar nada ni crear cuenta, elige entre pares de fotos reales del fotógrafo
+3. **El sistema calcula compatibilidad** — Alignment Score determinístico (0–100) con coincidencias y divergencias específicas
+4. **Se genera un Brief Visual** — documento compartido con dirección visual, must-haves, referencias y acuerdos. Ambas partes lo aprueban.
+
+---
+
+## Stack
+
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | Next.js 15+ App Router, React 19, TypeScript strict |
+| Estilos | Tailwind CSS v4, Design tokens de DESIGN.md |
+| Backend | Supabase (PostgreSQL, Auth, Storage, Realtime) |
+| AI | Gemini 2.0 Flash (default) / OpenAI GPT-4o (alternativa) |
+| Deploy | Vercel |
+| Tests | Vitest (unit), Playwright (E2E) |
+
+---
+
+## Quick Start
+
+### Prerrequisitos
+- Node.js 22+
+- npm 11+
+- Cuenta Supabase (ver `MANUAL_STEPS.txt`)
+- API key Gemini o OpenAI (ver `MANUAL_STEPS.txt`)
+
+### Instalación
 
 ```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Copiar variables de entorno
+cp .env.example .env.local
+# Editar .env.local con tus credenciales reales
+
+# 3. Aplicar migraciones Supabase (requiere Supabase CLI)
+npx supabase db push
+
+# 4. Cargar datos demo
+npx supabase db seed
+
+# 5. Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Acceso demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rol | Email | Password |
+|-----|-------|----------|
+| Fotógrafo demo | demo@encuadre.app | EncuadreDemo2024! |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Comandos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev          # Servidor de desarrollo
+npm run build        # Build de producción
+npm run start        # Servidor de producción local
+npm run lint         # ESLint (0 warnings)
+npm run typecheck    # TypeScript check
+npm run test         # Unit tests (Vitest)
+npm run test:e2e     # E2E tests (Playwright)
+npm run test:coverage # Coverage report
+npm run db:migrate   # Aplicar migraciones Supabase
+npm run db:seed      # Cargar datos demo
+npm run db:types     # Regenerar tipos TypeScript desde schema
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Estructura del proyecto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+encuadre/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (marketing)/        # Landing page pública
+│   │   ├── (auth)/             # Login / registro
+│   │   ├── app/                # Studio del fotógrafo (protegido)
+│   │   └── s/[token]/          # Experiencia del cliente (sin cuenta)
+│   ├── components/             # Componentes genéricos
+│   │   ├── ui/                 # Button, Card, Input, Badge, etc.
+│   │   ├── brand/              # Logo, GradientText
+│   │   ├── layout/             # StudioLayout, ClientLayout
+│   │   └── charts/             # AlignmentGauge, DimensionBars
+│   ├── features/               # Lógica específica del dominio
+│   │   ├── alignment/          # Cálculo y visualización de alineación
+│   │   ├── briefs/             # Generación y aprobación de briefs
+│   │   ├── client-session/     # Flujo del cliente
+│   │   └── portfolio/          # Subida y análisis de imágenes
+│   ├── server/                 # Código exclusivamente server-side
+│   │   ├── actions/            # Server Actions
+│   │   ├── repositories/       # Acceso a base de datos
+│   │   └── services/           # Lógica de negocio
+│   └── lib/                    # Utilidades e infraestructura
+│       ├── ai/                 # Proveedor de IA (Gemini/OpenAI)
+│       ├── security/           # Tokens criptográficos
+│       └── supabase/           # Clientes Supabase server/browser
+├── supabase/
+│   ├── migrations/             # Migraciones SQL versionadas
+│   └── seed/                   # Datos demo
+├── tests/
+│   ├── unit/                   # Tests del motor de alineación y tokens
+│   └── e2e/                    # Golden Path Playwright
+└── docs/                       # Documentación técnica
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Flujo principal (Golden Path)
+
+```
+Fotógrafo                          Sistema                      Cliente
+   │                                  │                            │
+   ├─ Registro/Login ─────────────────►│                            │
+   ├─ Sube portafolio ────────────────►│◄── Analiza con IA ─────────┤
+   │                                  │    Genera Style DNA         │
+   ├─ Crea proyecto ──────────────────►│                            │
+   ├─ Selecciona referencias ─────────►│                            │
+   ├─ Genera enlace/QR ───────────────►│                            │
+   │                                  │◄── Enlace seguro ──────────►│
+   │                                  │                            ├─ Abre enlace
+   │                                  │                            ├─ Comparaciones
+   │                                  │                            ├─ Preguntas
+   │                                  │◄── Envía preferencias ─────┤
+   │                                  │                            │
+   │                                  ├─ Calcula preference vector  │
+   │                                  ├─ Calcula Alignment Score    │
+   │                                  ├─ Detecta divergencias       │
+   │                                  ├─ Genera Visual Brief        │
+   │                                  │                            │
+   ├─ Ve Alignment Score ◄────────────┤                            │
+   ├─ Aprueba Brief ──────────────────►│◄── Cliente aprueba ────────┤
+   │                                  │                            │
+   └─ "Brief acordado ✓" ◄────────────┴────────────────────────────┘
+```
+
+---
+
+## Seguridad
+
+- **RLS** en todas las tablas de Supabase — fotógrafo solo accede a sus propios datos
+- **Token del cliente**: 128 bits criptográficos, almacenado como SHA-256, expira en 14 días
+- **Service Role Key** solo server-side, nunca en el navegador
+- **Imágenes**: solo derivados WebP/AVIF (sin originales), signed URLs con expiración
+- **Headers de seguridad**: X-Frame-Options, CSP, Referrer-Policy
+
+## Alignment Score
+
+El score se calcula **deterministicamente por código**, nunca por LLM:
+
+```
+score = 100 × [0.60 × (1 - weightedL1) + 0.40 × normalizedCosine]
+```
+
+Donde:
+- `weightedL1` = distancia L1 ponderada entre vectores fotógrafo y cliente
+- `normalizedCosine` = similitud coseno normalizada a [0,1]
+- Pesos por dimensión documentados en `docs/ALIGNMENT_ENGINE.md`
+
+Bandas (heurística MVP, no afirmación científica):
+- 85–100: Alineación muy alta
+- 70–84: Buena alineación  
+- 55–69: Alineación media — revisar puntos
+- <55: Divergencias importantes
+
+---
+
+## Documentación
+
+| Documento | Descripción |
+|-----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitectura del sistema |
+| [DATABASE.md](docs/DATABASE.md) | Modelo de datos y migraciones |
+| [AI_PIPELINE.md](docs/AI_PIPELINE.md) | Pipeline de análisis de imágenes |
+| [ALIGNMENT_ENGINE.md](docs/ALIGNMENT_ENGINE.md) | Motor de cálculo de score |
+| [SECURITY.md](docs/SECURITY.md) | Seguridad, RLS, tokens |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy en Vercel + Supabase |
+| [DESIGN.md](DESIGN.md) | Tokens de diseño y sistema visual |
+| [MANUAL_STEPS.txt](MANUAL_STEPS.txt) | Pasos manuales requeridos |
+| [AGENTS.md](AGENTS.md) | Reglas para agentes IA |
+| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
+
+---
+
+## Diseño
+
+El diseño fue generado con **Google Stitch MCP** usando `DESIGN.md` como contrato visual, con el design system "Encuadre Studio":
+
+- Stitch Project ID: `931707746720943674`
+- Design System ID: `ab263ce102924865910b23d555dfdbe7`
+- Pantallas generadas: Dashboard Studio, Client Pairwise, Alignment Score, Client Welcome, Brief Approval
+
+---
+
+*Hackathon MVP — construido con ENCUADRE_AGENT_PLAN.md como fuente de verdad.*
