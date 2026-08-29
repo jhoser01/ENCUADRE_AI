@@ -7,46 +7,31 @@ import { Logo } from '@/components/brand/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { createBrowserClient } from '@/lib/supabase/browser';
+import { loginAction } from '@/server/actions/auth';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const cleanEmail = email.trim().toLowerCase();
-
     try {
-      const supabase = createBrowserClient();
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
+      const formData = new FormData(e.currentTarget);
+      const result = await loginAction(formData);
 
-      if (signInError) {
-        setError(signInError.message === 'Invalid login credentials'
-          ? 'Correo o contraseña incorrectos. Verifica tus datos o regístrate si es una cuenta nueva.'
-          : signInError.message
-        );
-        setLoading(false);
-        return;
-      }
-
-      if (data?.user || data?.session) {
-        // Full hard navigation to ensure cookies are fresh on server
-        window.location.href = '/app';
-      } else {
-        setError('No se pudo verificar la sesión. Intenta nuevamente.');
+      if (result && !result.success) {
+        setError(result.error || 'Error al iniciar sesión.');
         setLoading(false);
       }
     } catch (err: any) {
-      setError(err?.message || 'Error de conexión al iniciar sesión.');
+      // Next.js redirect() throws a NEXT_REDIRECT error which is caught by Next.js router
+      if (err?.message?.includes('NEXT_REDIRECT')) {
+        return; // Redirecting successfully
+      }
+      setError(err?.message || 'Error al conectar con el servidor.');
       setLoading(false);
     }
   };
@@ -73,21 +58,19 @@ export default function LoginPage() {
               )}
 
               <Input
+                name="email"
                 type="email"
                 label="Correo electrónico"
                 placeholder="tu@estudio.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
               />
 
               <Input
+                name="password"
                 type="password"
                 label="Contraseña"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
               />

@@ -2,55 +2,34 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/brand/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { createBrowserClient } from '@/lib/supabase/browser';
+import { signupAction } from '@/server/actions/auth';
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [displayName, setDisplayName] = useState('');
-  const [studioName, setStudioName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const cleanEmail = email.trim().toLowerCase();
-
     try {
-      const supabase = createBrowserClient();
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: cleanEmail,
-        password,
-        options: {
-          data: {
-            display_name: displayName.trim(),
-            studio_name: studioName.trim(),
-          },
-        },
-      });
+      const formData = new FormData(e.currentTarget);
+      const result = await signupAction(formData);
 
-      if (signUpError) {
-        setError(signUpError.message || 'Error al crear la cuenta.');
+      if (result && !result.success) {
+        setError(result.error || 'Error al crear la cuenta.');
         setLoading(false);
-        return;
-      }
-
-      if (data?.user || data?.session) {
-        window.location.href = '/app';
-      } else {
-        router.push('/app');
       }
     } catch (err: any) {
-      setError(err?.message || 'Error al procesar el registro.');
+      if (err?.message?.includes('NEXT_REDIRECT')) {
+        return; // Redirecting successfully
+      }
+      setError(err?.message || 'Error al conectar con el servidor.');
       setLoading(false);
     }
   };
@@ -77,46 +56,44 @@ export default function SignupPage() {
               )}
 
               <Input
+                name="displayName"
                 type="text"
                 label="Tu nombre"
                 placeholder="Ej: Carlos Mendoza"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
                 required
               />
 
               <Input
+                name="studioName"
                 type="text"
                 label="Nombre de tu estudio o marca"
                 placeholder="Ej: Mendoza Photography"
-                value={studioName}
-                onChange={(e) => setStudioName(e.target.value)}
                 required
               />
 
               <Input
+                name="email"
                 type="email"
                 label="Correo electrónico"
                 placeholder="tu@estudio.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
 
               <Input
+                name="password"
                 type="password"
                 label="Contraseña (mínimo 6 caracteres)"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                autoComplete="new-password"
               />
             </CardContent>
 
             <CardFooter className="flex flex-col space-y-4 pt-2">
               <Button type="submit" variant="primary" className="w-full" loading={loading}>
-                Crear cuenta gratis
+                {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
               </Button>
 
               <p className="text-xs text-center text-[#A9A7B7]">
