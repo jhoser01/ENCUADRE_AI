@@ -76,7 +76,7 @@ export default function SignupPage() {
               <Input
                 type="text"
                 label="Tu nombre"
-                placeholder="Martín Valdivia"
+                placeholder="Ej: Carlos Mendoza"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
@@ -85,7 +85,7 @@ export default function SignupPage() {
               <Input
                 type="text"
                 label="Nombre de tu estudio o marca"
-                placeholder="Valdivia Visual Studio"
+                placeholder="Ej: Mendoza Photography"
                 value={studioName}
                 onChange={(e) => setStudioName(e.target.value)}
                 required
@@ -94,7 +94,7 @@ export default function SignupPage() {
               <Input
                 type="email"
                 label="Correo electrónico"
-                placeholder="martin@estudio.com"
+                placeholder="tu@estudio.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
