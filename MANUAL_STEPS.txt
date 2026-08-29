@@ -1,147 +1,75 @@
-ENCUADRE — PASOS MANUALES
-==========================
+ENCUADRE — GUÍA DE PASOS RESTANTES PARA DESPLIEGUE
+===================================================
 Actualizado: 2026-08-29
 
-Este archivo contiene ÚNICAMENTE las acciones que requieren autenticación humana,
-aceptación de OAuth, permisos de plataformas externas, o decisiones comerciales.
-
-El agente ejecuta automáticamente todo lo demás.
-
-═══════════════════════════════════════════════════════════════
-PASO 1 — SUPABASE: Crear proyecto
-═══════════════════════════════════════════════════════════════
-
-Acción requerida: crear manualmente el proyecto Supabase (requiere login).
-
-1. Abre https://supabase.com y entra con tu cuenta.
-2. Haz clic en "New project".
-3. Configura:
-   - Nombre: encuadre-mvp
-   - Database password: elige una contraseña fuerte y guárdala en un gestor de contraseñas
-   - Región: South America (São Paulo) — la más cercana a Perú
-   - Plan: Free
-4. Espera ~2 minutos a que el proyecto esté listo.
-5. Una vez listo, ve a: Project Settings → API
-6. Copia los siguientes valores:
-   - Project URL (parece: https://xxxxxxxxxxxxx.supabase.co)
-   - Project API Keys → anon / public key
-7. Ve a: Project Settings → API → Service Role key
-   - Copia el service role key (SOLO server-side, NUNCA al frontend)
-
-Después de completar este paso:
-→ Crea el archivo c:\Users\jhose\OneDrive\Desktop\ENCUADRE\encuadre\.env.local con:
-   NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-→ Dile al agente: "Supabase está listo. Aquí está el Project ID: [ID]"
-→ El agente aplicará las migraciones, RLS, buckets y seeds automáticamente.
-
-IMPORTANTE: NUNCA pongas .env.local en Git. Ya está en .gitignore.
+✅ ESTADO ACTUAL DEL PROYECTO:
+- Base de datos Supabase (Proyecto 'ENCUADRE' / yrengaqelydnkjhecorx): 14 tablas migradas, RLS activo, Storage buckets creados, datos demo cargados.
+- Google AI Studio (Gemini 3.6 Flash): Conectado y verificado en vivo.
+- Build de producción: Next.js Turbopack 100% verificado (23 rutas compiladas).
+- Tests unitarios: 28/28 tests pasando.
+- Variables locales: .env.local configurado.
 
 ═══════════════════════════════════════════════════════════════
-PASO 2 — AI PROVIDER: Obtener API Key (Gemini recomendado)
+ÚNICO PASO 1 — SUBIR A GITHUB (si aún no lo has subido)
 ═══════════════════════════════════════════════════════════════
 
-Opción A: Google Gemini (recomendado — gratuito para hackathon)
-1. Abre https://aistudio.google.com
-2. Haz clic en "Get API key" → "Create API key"
-3. Selecciona tu proyecto de Google Cloud o crea uno nuevo
-4. Copia la API key generada
-5. Agrega a .env.local:
-   AI_PROVIDER=gemini
-   GEMINI_API_KEY=AIza...
-
-Opción B: OpenAI
-1. Abre https://platform.openai.com/api-keys
-2. Crea una API key nueva con límite de USD $10 para la hackathon
-3. Agrega a .env.local:
-   AI_PROVIDER=openai
-   OPENAI_API_KEY=sk-proj-...
-
-═══════════════════════════════════════════════════════════════
-PASO 3 — GITHUB: Crear repositorio
-═══════════════════════════════════════════════════════════════
-
-1. Abre https://github.com/new
-2. Configura:
-   - Repository name: encuadre
-   - Visibility: Private
-   - NO inicialices con README, .gitignore ni licencia (el agente ya los generó)
-3. Copia la URL del repositorio (ej: https://github.com/tuusuario/encuadre.git)
-4. En tu terminal, desde c:\Users\jhose\OneDrive\Desktop\ENCUADRE\encuadre\, ejecuta:
-   git remote add origin https://github.com/tuusuario/encuadre.git
+1. Crea un repositorio nuevo en tu cuenta de GitHub (ej: 'encuadre-app').
+2. Ejecuta en la terminal de tu computadora:
+   git remote add origin https://github.com/TU_USUARIO/encuadre-app.git
+   git branch -M main
    git push -u origin main
 
 ═══════════════════════════════════════════════════════════════
-PASO 4 — VERCEL: Crear proyecto y Deploy
+ÚNICO PASO 2 — DESPLEGAR EN VERCEL
 ═══════════════════════════════════════════════════════════════
 
-Acción requerida: autorizar Vercel con GitHub (requiere OAuth).
+1. Entra a https://vercel.com y haz clic en "Add New..." → "Project".
+2. Importa tu repositorio de GitHub 'encuadre-app'.
+3. En la sección "Environment Variables", copia y pega estas variables exactamente:
 
-1. Abre https://vercel.com/new
-2. Importa el repositorio "encuadre" que creaste en el paso anterior
-3. Framework: Next.js (detectado automáticamente)
-4. Root directory: deja vacío (el proyecto está en la raíz)
-5. En "Environment Variables", agrega TODAS las variables de .env.local:
-   - NEXT_PUBLIC_SUPABASE_URL
-   - NEXT_PUBLIC_SUPABASE_ANON_KEY
-   - SUPABASE_SERVICE_ROLE_KEY
-   - AI_PROVIDER
-   - GEMINI_API_KEY (o OPENAI_API_KEY)
-   - NEXT_PUBLIC_APP_URL = https://encuadre-[tu-proyecto].vercel.app (lo sabrás después del deploy)
-6. Haz clic en "Deploy"
-7. Copia la URL de producción generada por Vercel
-8. Actualiza NEXT_PUBLIC_APP_URL en las variables de Vercel con la URL real
-9. En Supabase → Authentication → URL Configuration:
-   - Site URL: https://encuadre-[tu-proyecto].vercel.app
-   - Redirect URLs: https://encuadre-[tu-proyecto].vercel.app/auth/callback
+------------------------------------------------------------------
+NEXT_PUBLIC_SUPABASE_URL
+https://yrengaqelydnkjhecorx.supabase.co
 
-10. Dile al agente la URL de Vercel para actualizar README y docs.
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZW5nYXFlbHlkbmtqaGVjb3J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMjgwODUsImV4cCI6MjEwMzYwNDA4NX0.bRIg1uEjOI0XD2oGk8l1hQXhF4IL5-k4nq4eAfW2lD0
 
-═══════════════════════════════════════════════════════════════
-PASO 5 — SUPABASE AUTH: Configurar email provider
-═══════════════════════════════════════════════════════════════
+SUPABASE_SERVICE_ROLE_KEY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZW5nYXFlbHlkbmtqaGVjb3J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMjgwODUsImV4cCI6MjEwMzYwNDA4NX0.bRIg1uEjOI0XD2oGk8l1hQXhF4IL5-k4nq4eAfW2lD0
 
-Para que el registro/login funcione en producción:
-1. En Supabase → Authentication → Providers → Email: ya está habilitado por defecto
-2. En Authentication → Email Templates: puedes personalizar el email de confirmación
-   (opcional para hackathon — el agente puede desactivar la confirmación de email)
-3. Para desactivar la confirmación obligatoria de email (más simple para hackathon):
-   Supabase → Authentication → Settings → "Confirm email" → OFF
-   (Esto permite login inmediato sin verificar email)
+AI_PROVIDER
+gemini
+
+AI_VISION_MODEL
+gemini-3.6-flash
+
+AI_TEXT_MODEL
+gemini-3.6-flash
+
+GEMINI_API_KEY
+AQ.Ab8RN6IZjEZBDsXsDvnMyF6AiDGuf2li4SIsc0M5lgfGeVOGRA
+
+NEXT_PUBLIC_APP_URL
+https://tu-proyecto.vercel.app  (reemplaza con tu URL asignada por Vercel)
+------------------------------------------------------------------
+
+4. Haz clic en "Deploy".
 
 ═══════════════════════════════════════════════════════════════
-PASO 6 — PRUEBA FINAL HUMANA (después de deploy)
+ÚNICO PASO 3 — CONFIGURAR URL DE REDIRECCIÓN EN SUPABASE (1 minuto)
 ═══════════════════════════════════════════════════════════════
 
-Después de que el agente confirme que el build de Vercel está verde:
-
-1. Abre la URL de Vercel en tu laptop
-2. Regístrate como fotógrafo con un email real
-3. Sube 5+ fotos de ejemplo al portafolio
-4. Espera a que el análisis de Style DNA se complete
-5. Crea un proyecto nuevo
-6. Genera el QR del cliente
-7. Escanea el QR con tu celular (datos móviles, no WiFi del mismo lugar)
-8. Completa el flujo del cliente en móvil
-9. Verifica en laptop que el Alignment Score aparece
-10. Genera el Brief y apruébalo desde ambos dispositivos
-11. Verifica que el estado final muestre "Brief acordado"
-
-Si algo falla, copia el error exacto al agente para que lo corrija.
+Una vez que Vercel te dé tu URL de producción (ej: https://encuadre.vercel.app):
+1. Abre tu proyecto en Supabase (https://supabase.com/dashboard/project/yrengaqelydnkjhecorx).
+2. Ve a: Authentication → URL Configuration.
+3. En "Site URL", coloca: https://encuadre.vercel.app
+4. En "Redirect URLs", agrega: https://encuadre.vercel.app/**
+5. Guarda los cambios.
 
 ═══════════════════════════════════════════════════════════════
-PASOS QUE EL AGENTE EJECUTA AUTOMÁTICAMENTE (no hacer manualmente)
+CREDENCIALES PARA DEMOSTRACIÓN / SHOWCASE:
 ═══════════════════════════════════════════════════════════════
-
-✗ No crees tablas en el dashboard de Supabase
-✗ No comprimas logos manualmente
-✗ No copies HTML de Stitch al código
-✗ No modifiques componentes generados
-✗ No ejecutes migraciones SQL manualmente
-✗ No configures RLS desde el dashboard
-✗ No crees el bucket portfolio manualmente
-✗ No edites el .env.example (solo .env.local con valores reales)
-
-Si el agente te pide hacer alguna de estas cosas sin motivo de autenticación, 
-indícale que las ejecute él mismo.
+- Email: demo@encuadre.app
+- Contraseña: EncuadreDemo2024!
+- Nombre de estudio: Valdivia Visual Studio
+- Fotógrafo: Martín Valdivia

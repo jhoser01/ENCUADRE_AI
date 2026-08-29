@@ -9,7 +9,7 @@ import { aiAnalysisResponseSchema, aiBriefResponseSchema } from '@/schemas';
 import type { VisionProvider, AnalyzeImageInput, ImageFeatureResult, BriefInput, BriefResult } from './types';
 import type { ImageFeatureVector, BriefContent } from '@/types/database';
 
-const MODEL_NAME = process.env.AI_VISION_MODEL || 'gemini-2.0-flash';
+const MODEL_NAME = process.env.AI_VISION_MODEL || 'gemini-3.6-flash';
 const TIMEOUT_MS = 30_000;
 const MAX_RETRIES = 3;
 
