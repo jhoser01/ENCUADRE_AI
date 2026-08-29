@@ -37,21 +37,27 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     }
   );
 
-  // Refresh session
-  const { data: { user } } = await supabase.auth.getUser();
+  const pathname = request.nextUrl.pathname;
+  const isAppRoute = pathname.startsWith('/app');
+  const isAuthRoute = pathname === '/auth/login' || pathname === '/auth/signup';
 
-  // If visiting /app/* without authentication, redirect to /auth/login
-  if (!user && request.nextUrl.pathname.startsWith('/app')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    return NextResponse.redirect(url);
-  }
+  if (isAppRoute || isAuthRoute) {
+    // Only call the Supabase API to verify the user on routes that strictly require it
+    const { data: { user } } = await supabase.auth.getUser();
 
-  // If visiting /auth/login or /auth/signup while already authenticated, redirect to /app
-  if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/signup')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/app';
-    return NextResponse.redirect(url);
+    // If visiting /app/* without authentication, redirect to /auth/login
+    if (!user && isAppRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/auth/login';
+      return NextResponse.redirect(url);
+    }
+
+    // If visiting /auth/login or /auth/signup while already authenticated, redirect to /app
+    if (user && isAuthRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/app';
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
