@@ -42,17 +42,17 @@ export default async function ClientResultPage({
         </p>
       </div>
 
-      {/* Alignment Gauge in Light Card */}
-      <Card className="bg-white border-[#EEEEF5] shadow-sm p-6 space-y-4">
+      {/* Alignment Gauge in Dark Card */}
+      <Card className="bg-[#100A2E] border-[#7C3DFF]/30 shadow-lg p-6 space-y-4">
         <div data-testid="client-score">
           <AlignmentGauge score={score} size="md" />
         </div>
 
-        <div className="space-y-2 text-xs text-[#080714] text-left pt-2 border-t border-[#EEEEF5]">
+        <div className="space-y-2 text-xs text-[#F7F7FB] text-left pt-2 border-t border-[#7C3DFF]/20 mt-4">
           <h4 className="font-bold text-xs uppercase tracking-wider text-[#7C3DFF]">
             Puntos destacados de tu visión:
           </h4>
-          <ul className="space-y-1 text-[#626171]">
+          <ul className="space-y-1 text-[#A9A7B7]">
             <li className="flex items-center gap-2">
               <CheckCircle2 className="h-3.5 w-3.5 text-[#16C95A] flex-shrink-0" />
               <span>Gusto por tomas naturales y luz orgánica</span>
