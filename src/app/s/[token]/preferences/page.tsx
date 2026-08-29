@@ -40,7 +40,7 @@ export default function ClientPreferencesPage() {
       if (images && images.length >= 2) {
         items = images.map((img: any) => ({
           id: img.id,
-          url: '/brand/symbol.png', // in real signed storage this is the signed url
+          url: supabase.storage.from('portfolio').getPublicUrl(img.storage_path).data.publicUrl,
           category: img.category || undefined,
         }));
       } else {

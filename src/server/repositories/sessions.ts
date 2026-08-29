@@ -38,9 +38,9 @@ export async function getSessionByTokenHash(
   supabase: SupabaseClient,
   tokenHash: string
 ): Promise<(ClientSession & { projects?: any }) | null> {
-  const { data, error } = await supabase
+  const { data: session, error } = await supabase
     .from('client_sessions')
-    .select('*, projects(*, profiles(display_name, studio_name))')
+    .select('*, projects(*)')
     .eq('token_hash', tokenHash)
     .single();
 
@@ -48,7 +48,21 @@ export async function getSessionByTokenHash(
     if (error.code === 'PGRST116') return null;
     throw error;
   }
-  return data as unknown as ClientSession & { projects?: any };
+
+  // Fetch profile manually since there's no direct FK from projects to profiles
+  if (session && session.projects && session.projects.owner_id) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name, studio_name')
+      .eq('id', session.projects.owner_id)
+      .single();
+    
+    if (profile) {
+      session.projects.profiles = profile;
+    }
+  }
+
+  return session as unknown as ClientSession & { projects?: any };
 }
 
 export async function updateSessionStatus(

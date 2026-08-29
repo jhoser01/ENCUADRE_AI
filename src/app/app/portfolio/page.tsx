@@ -52,19 +52,23 @@ export default async function PortfolioPage() {
                 className="overflow-hidden bg-[#100A2E] border-[#7C3DFF]/20 flex flex-col justify-between"
               >
                 <div className="relative aspect-square w-full bg-[#080714] flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-[#7C3DFF]/40" />
+                  <img
+                    src={supabase.storage.from('portfolio').getPublicUrl(img.thumbnail_path || img.storage_path).data.publicUrl}
+                    alt={img.category || 'Fotografía del portafolio'}
+                    className="w-full h-full object-cover"
+                  />
                   {/* Status Badge Overlay */}
                   <div className="absolute top-2 right-2">
                     {img.analysis_status === 'completed' ? (
-                      <span className="p-1 rounded-full bg-[#16C95A] text-black shadow" title="Analizada">
+                      <span className="p-1 rounded-full bg-[#16C95A] text-black shadow flex items-center justify-center" title="Analizada">
                         <CheckCircle2 className="h-3.5 w-3.5 stroke-[3]" />
                       </span>
                     ) : img.analysis_status === 'processing' ? (
-                      <span className="p-1 rounded-full bg-[#F5A524] text-black shadow animate-spin" title="Analizando...">
+                      <span className="p-1 rounded-full bg-[#F5A524] text-black shadow animate-spin flex items-center justify-center" title="Analizando...">
                         <Clock className="h-3.5 w-3.5" />
                       </span>
                     ) : (
-                      <span className="p-1 rounded-full bg-white/20 text-white shadow" title="Pendiente">
+                      <span className="p-1 rounded-full bg-white/20 text-white shadow flex items-center justify-center" title="Pendiente">
                         <Clock className="h-3.5 w-3.5" />
                       </span>
                     )}
