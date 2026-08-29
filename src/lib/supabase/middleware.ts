@@ -1,15 +1,15 @@
 /**
  * lib/supabase/middleware.ts
- * Supabase session refresh helper for Next.js middleware.
+ * Supabase session refresh helper for Next.js middleware using @supabase/ssr.
  * Must be called from middleware.ts at the project root.
  */
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
 /**
  * Refreshes the Supabase session in middleware so server components
- * always receive a valid, up-to-date session.
+ * and server actions always receive a valid, up-to-date session.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let response = NextResponse.next({
@@ -21,29 +21,38 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({
-            request: { headers: request.headers },
+            request,
           });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({
-            request: { headers: request.headers },
-          });
-          response.cookies.set({ name, value: '', ...options });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
         },
       },
     }
   );
 
-  // Refresh session (important: do NOT remove this line).
-  await supabase.auth.getUser();
+  // Refresh session
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // If visiting /app/* without authentication, redirect to /auth/login
+  if (!user && request.nextUrl.pathname.startsWith('/app')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/login';
+    return NextResponse.redirect(url);
+  }
+
+  // If visiting /auth/login or /auth/signup while already authenticated, redirect to /app
+  if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/signup')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/app';
+    return NextResponse.redirect(url);
+  }
 
   return response;
 }

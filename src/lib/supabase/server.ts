@@ -1,9 +1,9 @@
 /**
  * lib/supabase/server.ts
- * Server-only Supabase client using @supabase/ssr.
+ * Server-only Supabase client using modern @supabase/ssr getAll/setAll.
  * NEVER import this file in client components.
  */
-import { createServerClient as createSSRClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient as createSSRClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from '@/types/database';
 
@@ -15,22 +15,16 @@ export async function createServerClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
+        setAll(cookiesToSet) {
           try {
-            cookieStore.set({ name, value, ...options });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
           } catch {
-            // set() may throw in read-only contexts (e.g. Server Components).
-            // The session refresh middleware handles this case.
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options });
-          } catch {
-            // Same as above.
+            // The `setAll` method was called from a Server Component.
           }
         },
       },
