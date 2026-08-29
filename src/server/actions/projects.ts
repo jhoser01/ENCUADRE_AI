@@ -83,7 +83,14 @@ export async function generateClientLinkAction(input: {
 
     await sessionRepo.createClientSession(supabase, input.projectId, tokenHash, expiresAt);
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+      baseUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+    } else if (!baseUrl && process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (!baseUrl) {
+      baseUrl = 'http://localhost:3000';
+    }
     const sessionUrl = buildSessionUrl(baseUrl, token);
 
     // Generate QR code data URL
