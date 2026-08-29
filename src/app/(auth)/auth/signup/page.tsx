@@ -23,15 +23,17 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
+    const cleanEmail = email.trim().toLowerCase();
+
     try {
       const supabase = createBrowserClient();
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: cleanEmail,
         password,
         options: {
           data: {
-            display_name: displayName,
-            studio_name: studioName,
+            display_name: displayName.trim(),
+            studio_name: studioName.trim(),
           },
         },
       });
@@ -42,9 +44,10 @@ export default function SignupPage() {
         return;
       }
 
-      if (data.user) {
+      if (data?.user || data?.session) {
+        window.location.href = '/app';
+      } else {
         router.push('/app');
-        router.refresh();
       }
     } catch (err: any) {
       setError(err?.message || 'Error al procesar el registro.');

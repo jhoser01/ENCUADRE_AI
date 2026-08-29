@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { Logo } from '@/components/brand/logo';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { createBrowserClient } from '@/lib/supabase/browser';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,25 +20,33 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
+    const cleanEmail = email.trim().toLowerCase();
+
     try {
       const supabase = createBrowserClient();
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
+        email: cleanEmail,
         password,
       });
 
       if (signInError) {
-        setError(signInError.message || 'Credenciales incorrectas.');
+        setError(signInError.message === 'Invalid login credentials'
+          ? 'Correo o contraseña incorrectos. Verifica tus datos o regístrate si es una cuenta nueva.'
+          : signInError.message
+        );
         setLoading(false);
         return;
       }
 
-      if (data.user) {
-        router.push('/app');
-        router.refresh();
+      if (data?.user || data?.session) {
+        // Full hard navigation to ensure cookies are fresh on server
+        window.location.href = '/app';
+      } else {
+        setError('No se pudo verificar la sesión. Intenta nuevamente.');
+        setLoading(false);
       }
     } catch (err: any) {
-      setError(err?.message || 'Error al iniciar sesión.');
+      setError(err?.message || 'Error de conexión al iniciar sesión.');
       setLoading(false);
     }
   };
@@ -61,7 +67,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="p-3 rounded-md bg-[#E5484D]/15 border border-[#E5484D]/30 text-xs text-[#E5484D]">
+                <div className="p-3 rounded-md bg-[#E5484D]/15 border border-[#E5484D]/30 text-xs text-[#E5484D] leading-relaxed">
                   {error}
                 </div>
               )}
@@ -89,8 +95,8 @@ export default function LoginPage() {
 
             <CardFooter className="flex flex-col space-y-4 pt-2">
               <Button type="submit" variant="primary" className="w-full gap-2" loading={loading}>
-                <span>Iniciar sesión</span>
-                <ArrowRight className="h-4 w-4" />
+                <span>{loading ? 'Iniciando sesión...' : 'Iniciar sesión'}</span>
+                {!loading && <ArrowRight className="h-4 w-4" />}
               </Button>
 
               <p className="text-xs text-center text-[#A9A7B7]">
