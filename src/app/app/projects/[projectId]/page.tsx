@@ -12,6 +12,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import * as projectRepo from '@/server/repositories/projects';
 import * as alignmentRepo from '@/server/repositories/alignment';
 import * as briefRepo from '@/server/repositories/briefs';
+import { GenerateLinkButton } from '@/features/projects/generate-link-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -155,10 +156,14 @@ export default async function ProjectSummaryPage({
                   Esperando respuestas del cliente
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-[#A9A7B7]">
+              <CardContent className="space-y-4 text-sm text-[#A9A7B7]">
                 <p>
                   El cliente aún no ha completado su test visual. En cuanto responda las comparaciones, se calculará el Alignment Score automáticamente.
                 </p>
+                <div className="pt-2 border-t border-[#F5A524]/20">
+                  <p className="mb-3 text-xs">Si perdiste el enlace seguro, puedes generar uno nuevo aquí:</p>
+                  <GenerateLinkButton projectId={projectId} />
+                </div>
               </CardContent>
             </Card>
           )}
