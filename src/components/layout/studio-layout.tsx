@@ -114,13 +114,23 @@ export function StudioLayout({ children }: { children: React.ReactNode }) {
               </button>
             </div>
             <NavLinks />
-            <div className="pt-4 border-t border-[#7C3DFF]/10">
+            <div className="pt-4 border-t border-[#7C3DFF]/10 space-y-3">
               <Button asChild variant="primary" className="w-full justify-center gap-2">
                 <Link href="/app/projects/new" onClick={() => setMobileOpen(false)}>
                   <Plus className="h-4 w-4" />
                   <span>Nuevo proyecto</span>
                 </Link>
               </Button>
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleSignOut();
+                }}
+                className="flex items-center gap-2 w-full px-3 py-2 text-xs text-[#A9A7B7] hover:text-white rounded transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Cerrar sesión</span>
+              </button>
             </div>
           </div>
         </div>

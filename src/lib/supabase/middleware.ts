@@ -40,25 +40,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   // Use getSession instead of getUser to avoid blocking network requests to the Supabase API
   // on every middleware invocation. getSession decodes the local cookie and only makes a
   // network request if the token needs to be refreshed. This prevents Vercel 504 timeouts.
-  const { data: { session } } = await supabase.auth.getSession();
-
-  const pathname = request.nextUrl.pathname;
-  const isAppRoute = pathname.startsWith('/app');
-  const isAuthRoute = pathname === '/auth/login' || pathname === '/auth/signup';
-
-  // Protect /app routes
-  if (isAppRoute && !session) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect away from auth routes if already logged in
-  if (isAuthRoute && session) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/app';
-    return NextResponse.redirect(url);
-  }
+  await supabase.auth.getSession();
 
   return response;
 }
