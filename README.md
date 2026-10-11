@@ -2,9 +2,29 @@
 
 **Alinea la visión. Antes de tomar la foto.**
 
+**Proyecto web de hackathon · Fotografía, experiencia de usuario e IA aplicada.**
+
+[Ver despliegue registrado en GitHub](https://encuadre-ai.vercel.app) · [Arquitectura](docs/ARCHITECTURE.md) · [Motor de alineación](docs/ALIGNMENT_ENGINE.md)
+
+> **Alcance:** MVP experimental. El Alignment Score es una heurística definida por el proyecto; no equivale a una medida científica validada de compatibilidad creativa. La disponibilidad del despliegue no se comprobó en esta revisión.
+
 ENCUADRE es una plataforma web que alinea las expectativas visuales entre fotógrafo y cliente antes de una sesión fotográfica, eliminando el problema de que las expectativas se comunican con palabras subjetivas cuando deberían validarse visualmente.
 
 ---
+
+## En pocas palabras
+
+ENCUADRE propone transformar expectativas fotográficas subjetivas en referencias visuales que cliente y fotógrafo pueden comparar antes de una sesión. El flujo descrito contempla un perfil visual del fotógrafo (Style DNA), selección de preferencias, una puntuación de alineación calculada mediante código y un brief compartido.
+
+| Área | Implementación documentada |
+| --- | --- |
+| Aplicación | Next.js, React y TypeScript |
+| Persistencia/autenticación | Supabase |
+| Experiencia de usuario | Flujo fotógrafo → cliente → acuerdo visual |
+| IA | Análisis de referencias visuales como parte del MVP |
+| Alineación | Heurística determinística; no es una decisión de un LLM |
+
+El código y los documentos describen el MVP; el README **no certifica** que todos los pasos estén operativos en un entorno de producción. Para comprobarlo es necesario realizar un recorrido de la aplicación con datos de prueba.
 
 ## ¿Qué hace ENCUADRE?
 
@@ -20,7 +40,7 @@ ENCUADRE es una plataforma web que alinea las expectativas visuales entre fotóg
 | Capa | Tecnología |
 |------|-----------|
 | Frontend | Next.js 15+ App Router, React 19, TypeScript strict |
-| Estilos | Tailwind CSS v4, Design tokens de DESIGN.md |
+| Estilos | Tailwind CSS v4, Design tokens implementados en Tailwind y documentados en el flujo de diseño |
 | Backend | Supabase (PostgreSQL, Auth, Storage, Realtime) |
 | AI | Gemini 2.0 Flash (default) / OpenAI GPT-4o (alternativa) |
 | Deploy | Vercel |
@@ -58,11 +78,10 @@ npm run dev
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-### Acceso demo
+### Acceso de demostración
 
-| Rol | Email | Password |
-|-----|-------|----------|
-| Fotógrafo demo | demo@encuadre.app | EncuadreDemo2024! |
+El despliegue registrado en GitHub es **https://encuadre-ai.vercel.app** (disponibilidad no verificada). No se incluyen credenciales en este README. Si existe una cuenta de pruebas pública, debe ser aislada, con datos descartables y permisos mínimos.
+
 
 ---
 
@@ -192,7 +211,7 @@ Bandas (heurística MVP, no afirmación científica):
 | [ALIGNMENT_ENGINE.md](docs/ALIGNMENT_ENGINE.md) | Motor de cálculo de score |
 | [SECURITY.md](docs/SECURITY.md) | Seguridad, RLS, tokens |
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy en Vercel + Supabase |
-| [DESIGN.md](DESIGN.md) | Tokens de diseño y sistema visual |
+| [DESIGN_WORKFLOW.md](docs/DESIGN_WORKFLOW.md) | Tokens de diseño y sistema visual |
 | [MANUAL_STEPS.txt](MANUAL_STEPS.txt) | Pasos manuales requeridos |
 | [AGENTS.md](AGENTS.md) | Reglas para agentes IA |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
@@ -201,7 +220,7 @@ Bandas (heurística MVP, no afirmación científica):
 
 ## Diseño
 
-El diseño fue generado con **Google Stitch MCP** usando `DESIGN.md` como contrato visual, con el design system "Encuadre Studio":
+El diseño fue generado con **Google Stitch MCP** siguiendo el flujo documentado en `docs/DESIGN_WORKFLOW.md`, con el design system "Encuadre Studio":
 
 - Stitch Project ID: `931707746720943674`
 - Design System ID: `ab263ce102924865910b23d555dfdbe7`
